@@ -12,8 +12,10 @@ export function BookFrame({ children }: { children: ReactNode }) {
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-pretty text-foreground/80">
           Five holdings, ordered by how far the average analyst target sits from
-          the last close. The same math applies to every public name. There is
-          room for ten. This is an estimate, not investment advice.
+          the last close, and five candidates that could replace one of them.
+          The candidates are not in the book. The same math applies to every
+          public name. There is room for ten. This is an estimate, not
+          investment advice.
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
           Named in this order: Apple, Amazon, NVIDIA, SpaceX, and Microsoft.

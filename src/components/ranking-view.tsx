@@ -11,6 +11,7 @@ import {
   formatUsd,
   formatUpside,
   rankBook,
+  rankCandidates,
   type RankedBook,
   type RankedHolding,
 } from "@/lib/rankings"
@@ -86,7 +87,13 @@ function HoldingCard({ holding }: { holding: RankedHolding }) {
                 : ""}
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {holding.rank === 1 ? <Badge>Highest estimate</Badge> : null}
+              {holding.rank === 1 && holding.picker == null ? (
+                <Badge>Highest estimate</Badge>
+              ) : null}
+              {holding.picker === "jared" ? <Badge>Jared&apos;s pick</Badge> : null}
+              {holding.picker === "suggested" ? (
+                <Badge variant="secondary">Suggested</Badge>
+              ) : null}
               {holding.recommendation ? (
                 <Badge variant="outline">{holding.recommendation}</Badge>
               ) : null}
@@ -103,6 +110,9 @@ function HoldingCard({ holding }: { holding: RankedHolding }) {
               : formatUpside(holding.impliedUpside)}
           </p>
         </div>
+        {holding.pickNote ? (
+          <p className="text-sm leading-relaxed text-pretty">{holding.pickNote}</p>
+        ) : null}
         <p className="text-sm leading-relaxed text-pretty">{holding.reason}</p>
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div>
@@ -171,8 +181,14 @@ export function RankingSkeleton() {
         <Skeleton className="h-4 w-full max-w-sm" />
       </div>
       <div className="flex flex-col gap-4">
-        {Array.from({ length: 5 }, (_, index) => (
+        {Array.from({ length: 3 }, (_, index) => (
           <Skeleton key={index} className="h-40 w-full rounded-xl" />
+        ))}
+      </div>
+      <Skeleton className="h-7 w-56" />
+      <div className="flex flex-col gap-4">
+        {Array.from({ length: 2 }, (_, index) => (
+          <Skeleton key={index} className="h-28 w-full rounded-xl" />
         ))}
       </div>
     </section>
@@ -214,10 +230,45 @@ function RankingList({ book }: { book: RankedBook }) {
   )
 }
 
+function CandidateList({ candidates }: { candidates: RankedHolding[] }) {
+  return (
+    <section className="flex flex-col gap-6" aria-labelledby="candidates-heading">
+      <div>
+        <h2
+          id="candidates-heading"
+          className="font-heading text-2xl tracking-tight"
+        >
+          Replacement candidates
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground">
+          Not held. Jared named Palo Alto Networks and Google. Broadcom, Meta,
+          and Eli Lilly are suggested so a swap has a chip alternative, a
+          mega-cap platform that is not already owned, and one company outside
+          technology. Adding all five without a sale would fill the ten-seat
+          book, so they are listed as replacements. Same upside math, ranked
+          among themselves.
+        </p>
+      </div>
+      <ol className="flex list-none flex-col gap-4">
+        {candidates.map((holding) => (
+          <li key={holding.symbol ?? holding.name}>
+            <HoldingCard holding={holding} />
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
 export function RankingResults() {
   const book = rankBook()
-  if (book.holdings.length === 0) return <EmptyBook />
-  return <RankingList book={book} />
+  const candidates = rankCandidates(book.holdings)
+  return (
+    <>
+      {book.holdings.length === 0 ? <EmptyBook /> : <RankingList book={book} />}
+      <CandidateList candidates={candidates} />
+    </>
+  )
 }
 
 export function MethodNotes() {
@@ -233,6 +284,13 @@ export function MethodNotes() {
           SpaceX was checked against its June 2026 Nasdaq listing. It trades as
           SPCX, so it is rated with the same figure as Apple, Amazon, NVIDIA,
           and Microsoft.
+        </p>
+        <p className="mt-3 text-sm leading-relaxed text-pretty">
+          The candidates use that same figure and are not holdings. Google is
+          scored as Alphabet Class A, ticker GOOGL. Class C, ticker GOOG, was
+          checked and is not the share used here. Broadcom, Meta, and Eli Lilly
+          were suggested for the seat they could fill. That suggestion is why
+          they are on the list. Their order is still the upside figure.
         </p>
         <p className="mt-3 text-sm leading-relaxed text-pretty">
           Closes are the {PRICE_AS_OF_LABEL} regular session. Average targets

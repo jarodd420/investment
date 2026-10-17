@@ -36,6 +36,8 @@ export type RecommendationLabel =
 
 export type HoldingStatus = "rated" | "unrated"
 
+export type Picker = "jared" | "suggested"
+
 export type HoldingInput = {
   symbol: string | null
   name: string
@@ -47,6 +49,8 @@ export type HoldingInput = {
   analystTargets: number | null
   recommendation: RecommendationLabel | null
   listingNote: string | null
+  picker?: Picker
+  pickNote?: string
 }
 
 export type RankedHolding = HoldingInput & {
@@ -131,6 +135,83 @@ export const HOLDINGS: HoldingInput[] = [
   },
 ]
 
+export const CANDIDATES: HoldingInput[] = [
+  {
+    symbol: "PANW",
+    name: "Palo Alto Networks",
+    legalName: "Palo Alto Networks, Inc.",
+    exchange: "Nasdaq",
+    status: "rated",
+    lastPrice: 342,
+    averageTarget: 398.52,
+    analystTargets: 50,
+    recommendation: "Buy",
+    listingNote: null,
+    picker: "jared",
+    pickNote: "Cybersecurity is not in the book today.",
+  },
+  {
+    symbol: "GOOGL",
+    name: "Google",
+    legalName: "Alphabet Inc.",
+    exchange: "Nasdaq",
+    status: "rated",
+    lastPrice: 340.59,
+    averageTarget: 430.51,
+    analystTargets: 54,
+    recommendation: "Strong Buy",
+    listingNote: null,
+    picker: "jared",
+    pickNote:
+      "Google here is Alphabet Class A, ticker GOOGL. Class C trades as GOOG and is not the share scored here.",
+  },
+  {
+    symbol: "AVGO",
+    name: "Broadcom",
+    legalName: "Broadcom Inc.",
+    exchange: "Nasdaq",
+    status: "rated",
+    lastPrice: 328.75,
+    averageTarget: 527.59,
+    analystTargets: 47,
+    recommendation: "Strong Buy",
+    listingNote: null,
+    picker: "suggested",
+    pickNote:
+      "Suggested if the open seat is NVIDIA. Broadcom is the other widely covered way to own custom AI chips and networking silicon.",
+  },
+  {
+    symbol: "META",
+    name: "Meta",
+    legalName: "Meta Platforms, Inc.",
+    exchange: "Nasdaq",
+    status: "rated",
+    lastPrice: 709.33,
+    averageTarget: 814.51,
+    analystTargets: 58,
+    recommendation: "Strong Buy",
+    listingNote: null,
+    picker: "suggested",
+    pickNote:
+      "Suggested if the open seat is a mega-cap platform already held. Meta is the large ads-and-AI company that is not in the book.",
+  },
+  {
+    symbol: "LLY",
+    name: "Eli Lilly",
+    legalName: "Eli Lilly and Company",
+    exchange: "NYSE",
+    status: "rated",
+    lastPrice: 1257.03,
+    averageTarget: 1328.05,
+    analystTargets: 30,
+    recommendation: "Buy",
+    listingNote: null,
+    picker: "suggested",
+    pickNote:
+      "Suggested if the open seat should not be another technology name. The book is five technology companies, and Lilly is a large, widely covered company outside that group.",
+  },
+]
+
 export const SOURCES: SourceGroup[] = [
   {
     id: "yahoo",
@@ -143,13 +224,18 @@ export const SOURCES: SourceGroup[] = [
       { label: "NVDA", href: "https://finance.yahoo.com/quote/NVDA/" },
       { label: "SPCX", href: "https://finance.yahoo.com/quote/SPCX/" },
       { label: "MSFT", href: "https://finance.yahoo.com/quote/MSFT/" },
+      { label: "PANW", href: "https://finance.yahoo.com/quote/PANW/" },
+      { label: "GOOGL", href: "https://finance.yahoo.com/quote/GOOGL/" },
+      { label: "AVGO", href: "https://finance.yahoo.com/quote/AVGO/" },
+      { label: "META", href: "https://finance.yahoo.com/quote/META/" },
+      { label: "LLY", href: "https://finance.yahoo.com/quote/LLY/" },
     ],
   },
   {
     id: "stockanalysis",
     label: "StockAnalysis, citing S&P Global",
     detail:
-      "Forecast pages retrieved October 17, 2026. Each page shows the same average price target, to the cent. StockAnalysis attributes consensus targets to S&P Global Market Intelligence. Those pages poll a different analyst count than Yahoo’s target count, so that count is not used in the rank.",
+      "Forecast pages retrieved October 17, 2026. Average targets match Yahoo Finance to the cent, except Eli Lilly: StockAnalysis displays that average as $1,328, and the Yahoo figure used here is $1,328.05. Both publish +5.65% upside. StockAnalysis attributes consensus targets to S&P Global Market Intelligence. Those pages poll a different analyst count than Yahoo’s target count, so that count is not used in the rank.",
     links: [
       {
         label: "AAPL",
@@ -170,6 +256,26 @@ export const SOURCES: SourceGroup[] = [
       {
         label: "MSFT",
         href: "https://stockanalysis.com/stocks/msft/forecast/",
+      },
+      {
+        label: "PANW",
+        href: "https://stockanalysis.com/stocks/panw/forecast/",
+      },
+      {
+        label: "GOOGL",
+        href: "https://stockanalysis.com/stocks/googl/forecast/",
+      },
+      {
+        label: "AVGO",
+        href: "https://stockanalysis.com/stocks/avgo/forecast/",
+      },
+      {
+        label: "META",
+        href: "https://stockanalysis.com/stocks/meta/forecast/",
+      },
+      {
+        label: "LLY",
+        href: "https://stockanalysis.com/stocks/lly/forecast/",
       },
     ],
   },
@@ -238,11 +344,37 @@ function ordinal(value: number): string {
   }
 }
 
+function nameList(holdings: RankedHolding[]): string {
+  const names = holdings.map((holding) => holding.name)
+  if (names.length <= 1) return names[0] ?? ""
+  if (names.length === 2) return `${names[0]} and ${names[1]}`
+  return `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`
+}
+
+export function bookComparison(upside: number, book: RankedHolding[]): string {
+  const rated = book.filter((holding) => holding.impliedUpside != null)
+  const above = rated.filter((holding) => (holding.impliedUpside as number) > upside)
+  const below = rated.filter((holding) => (holding.impliedUpside as number) < upside)
+  if (above.length === 0 && below.length > 0) {
+    return "On this measure the estimated upside is higher than every name in the book."
+  }
+  if (below.length === 0 && above.length > 0) {
+    return "On this measure the estimated upside is lower than every name in the book."
+  }
+  const higherThan = below.length
+    ? `Higher estimated upside than ${nameList(below)}.`
+    : ""
+  const lowerThan = above.length ? ` Lower than ${nameList(above)}.` : ""
+  return `${higherThan}${lowerThan}`.trim()
+}
+
 function describe(
   holding: HoldingInput,
   implied: number | null,
   index: number,
   ratedCount: number,
+  scope: "book" | "candidates",
+  book?: RankedHolding[],
 ): string {
   if (
     holding.status !== "rated" ||
@@ -250,15 +382,17 @@ function describe(
     holding.averageTarget == null ||
     implied == null
   ) {
-    return `${holding.name} stays on the book and is not rated. It has no public share price, so there is no consensus upside and no ROI score.`
+    return `${holding.name} stays on the list and is not rated. It has no public share price, so there is no consensus upside and no ROI score.`
   }
 
   const gap = cents(cents(holding.averageTarget) - cents(holding.lastPrice))
   const relation = gap >= 0 ? "above" : "below"
   const place =
     index === 0
-      ? "This is the widest estimated upside in the book."
-      : `It ranks ${ordinal(index + 1)} of ${ratedCount} rated names on this measure.`
+      ? scope === "book"
+        ? "This is the widest estimated upside in the book."
+        : "This is the widest estimated upside among the candidates."
+      : `It ranks ${ordinal(index + 1)} of ${ratedCount} ${scope === "book" ? "rated names" : "candidates"} on this measure.`
   const listing = holding.listingNote ? ` ${holding.listingNote}` : ""
   const coverage =
     holding.analystTargets != null
@@ -268,11 +402,20 @@ function describe(
     gap < 0 && holding.recommendation
       ? ` The published recommendation is still ${holding.recommendation}; this rank uses the price gap instead.`
       : ""
+  const comparison =
+    scope === "candidates" && book
+      ? ` ${bookComparison(implied, book)}`
+      : ""
 
-  return `The average target of ${formatUsd(holding.averageTarget)} is ${formatUsd(Math.abs(gap))} ${relation} the ${formatUsd(holding.lastPrice)} close (${formatUpside(implied)}).${listing} ${place}${coverage}${labelNote}`
+  return `The average target of ${formatUsd(holding.averageTarget)} is ${formatUsd(Math.abs(gap))} ${relation} the ${formatUsd(holding.lastPrice)} close (${formatUpside(implied)}).${listing} ${place}${coverage}${labelNote}${comparison}`
 }
 
-export function rankHoldings(holdings: HoldingInput[]): RankedHolding[] {
+export function rankHoldings(
+  holdings: HoldingInput[],
+  options?: { scope?: "book" | "candidates"; book?: RankedHolding[] },
+): RankedHolding[] {
+  const scope = options?.scope ?? "book"
+  const book = options?.book
   const scored = holdings.map((holding, givenOrder) => {
     const rated =
       holding.status === "rated" &&
@@ -307,7 +450,7 @@ export function rankHoldings(holdings: HoldingInput[]): RankedHolding[] {
       ...row.holding,
       rank,
       impliedUpside: row.implied,
-      reason: describe(row.holding, row.implied, index, ratedCount),
+      reason: describe(row.holding, row.implied, index, ratedCount, scope, book),
     }
   })
 }
@@ -326,4 +469,8 @@ export function rankBook(): RankedBook {
     retrievedLabel: RETRIEVED_LABEL,
     holdings: rankHoldings(HOLDINGS),
   }
+}
+
+export function rankCandidates(book: RankedHolding[] = rankHoldings(HOLDINGS)): RankedHolding[] {
+  return rankHoldings(CANDIDATES, { scope: "candidates", book })
 }
