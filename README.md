@@ -12,6 +12,14 @@ SpaceX is publicly traded. It listed on Nasdaq as SPCX, with trading beginning J
 
 This ranking is an estimate, not investment advice.
 
+## Public site
+
+GitHub Pages serves the static site from the `gh-pages` branch:
+
+[https://jarodd420.github.io/investment/](https://jarodd420.github.io/investment/)
+
+`npm run build:pages` writes that site to `out/`, with asset paths under `/investment`. Publish a new build by replacing the `gh-pages` branch with the contents of `out/` plus a `.nojekyll` file. In the repository settings, Pages must use the `gh-pages` branch and the `/` folder.
+
 ## Run locally
 
 ```bash
