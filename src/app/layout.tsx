@@ -19,9 +19,9 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
-  title: "The book, by estimated ROI",
+  title: "The Rodriguez Letter",
   description:
-    "Jared Rodriguez’s holdings ranked by consensus analyst upside. An estimate, not investment advice.",
+    "Issue 1 of Jared Rodriguez’s investment letter. The book ranked by consensus analyst upside, plus a three-point note on Broadcom’s business. An estimate, not investment advice.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -30,10 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <div className="h-1 bg-primary" />
-        {children}
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

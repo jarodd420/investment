@@ -38,6 +38,18 @@ export type HoldingStatus = "rated" | "unrated"
 
 export type Picker = "jared" | "suggested"
 
+export type ThesisPoint = {
+  title: string
+  body: string
+}
+
+export type CompanyThesis = {
+  headline: string
+  intro: string
+  points: ThesisPoint[]
+  sourceNote: string
+}
+
 export type HoldingInput = {
   symbol: string | null
   name: string
@@ -51,6 +63,7 @@ export type HoldingInput = {
   listingNote: string | null
   picker?: Picker
   pickNote?: string
+  thesis?: CompanyThesis
 }
 
 export type RankedHolding = HoldingInput & {
@@ -178,7 +191,28 @@ export const CANDIDATES: HoldingInput[] = [
     listingNote: null,
     picker: "suggested",
     pickNote:
-      "Suggested if the open seat is NVIDIA. Broadcom is the other widely covered way to own custom AI chips and networking silicon.",
+      "Suggested if the open seat is NVIDIA. The three points below are the business, not a read of the price.",
+    thesis: {
+      headline: "Three points on the business",
+      intro:
+        "Broadcom designs semiconductors and infrastructure software. These points use the company’s own third-quarter fiscal 2026 results, for the quarter ended August 2, 2026, reported September 2, 2026. They do not use the share price, a chart, or the analyst target.",
+      points: [
+        {
+          title: "It designs custom AI accelerators and the networking around them",
+          body: "Management said demand for custom AI accelerators and networking was very strong. AI semiconductor revenue was $16.7 billion in the quarter, up 221% from a year earlier and 54% from the prior quarter. The company guided AI semiconductor revenue to $21.7 billion in the fourth quarter, up 236% from a year earlier. That fourth-quarter figure is guidance, not a result.",
+        },
+        {
+          title: "The semiconductor business is most of the company, and it already produces cash",
+          body: "Semiconductor solutions were $20.8 billion, 70% of the quarter’s $29.6 billion of revenue, up 127% from a year earlier. GAAP operating income was $16.0 billion. Free cash flow was $13.7 billion, 46% of revenue, after $0.5 billion of capital spending. The case is the profit and cash the chip business already earns.",
+        },
+        {
+          title: "Infrastructure software is a second franchise, not a side project",
+          body: "Infrastructure software was $8.8 billion, 30% of revenue, up 29% from a year earlier. The company’s filings describe this alongside its data-center virtualization products, the business it expanded by acquiring VMware. In the same quarter the chip line surged, the software line still grew.",
+        },
+      ],
+      sourceNote:
+        "Figures are from Broadcom’s September 2, 2026 earnings release, filed with the SEC as an exhibit to the Form 8-K. Dollar amounts follow that release’s rounding. Fourth-quarter amounts are the company’s outlook.",
+    },
   },
   {
     symbol: "META",
@@ -276,6 +310,22 @@ export const SOURCES: SourceGroup[] = [
       {
         label: "LLY",
         href: "https://stockanalysis.com/stocks/lly/forecast/",
+      },
+    ],
+  },
+  {
+    id: "broadcom-results",
+    label: "Broadcom third-quarter fiscal 2026 results",
+    detail:
+      "Company earnings release dated September 2, 2026, for the quarter ended August 2, 2026, filed as Exhibit 99.1 to the Form 8-K. Used only for the three-point Broadcom note: AI semiconductor revenue, semiconductor solutions, infrastructure software, operating income, and free cash flow. The rank itself does not use these figures.",
+    links: [
+      {
+        label: "SEC Exhibit 99.1",
+        href: "https://www.sec.gov/Archives/edgar/data/1730168/000173016826000076/avgo-08022026x8kxex99.htm",
+      },
+      {
+        label: "Company release",
+        href: "https://www.broadcom.com/company/news/financial-releases/64671",
       },
     ],
   },

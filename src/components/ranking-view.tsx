@@ -66,11 +66,43 @@ function upsideClass(value: number | null): string {
   return "text-foreground"
 }
 
+function CompanyThesis({ holding }: { holding: RankedHolding }) {
+  if (!holding.thesis) return null
+  const thesis = holding.thesis
+  return (
+    <div className="border-t border-foreground/15 pt-4">
+      <p className="text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
+        Company fundamentals
+      </p>
+      <h4 className="mt-2 font-heading text-2xl leading-tight">{thesis.headline}</h4>
+      <p className="mt-3 font-heading text-base leading-relaxed text-pretty">
+        {thesis.intro}
+      </p>
+      <ol className="mt-4 flex list-none flex-col gap-4">
+        {thesis.points.map((point, index) => (
+          <li key={point.title} className="flex gap-3">
+            <span className="font-heading text-xl leading-none text-primary tabular-nums">
+              {index + 1}
+            </span>
+            <div className="min-w-0">
+              <p className="font-heading text-lg leading-snug">{point.title}</p>
+              <p className="mt-1 text-sm leading-relaxed text-pretty">{point.body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        {thesis.sourceNote}
+      </p>
+    </div>
+  )
+}
+
 function HoldingCard({ holding }: { holding: RankedHolding }) {
   const rated = holding.impliedUpside != null && holding.rank != null
   return (
-    <Card>
-      <CardContent className="flex flex-col gap-4">
+    <Card className="rounded-none bg-transparent shadow-none ring-0">
+      <CardContent className="flex flex-col gap-4 px-0">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h3 className="font-heading text-2xl leading-tight">
@@ -113,7 +145,10 @@ function HoldingCard({ holding }: { holding: RankedHolding }) {
         {holding.pickNote ? (
           <p className="text-sm leading-relaxed text-pretty">{holding.pickNote}</p>
         ) : null}
-        <p className="text-sm leading-relaxed text-pretty">{holding.reason}</p>
+        <p className="font-heading text-base leading-relaxed text-pretty">
+          {holding.reason}
+        </p>
+        <CompanyThesis holding={holding} />
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div>
             <dt className="text-xs text-muted-foreground">Last close</dt>
@@ -137,7 +172,7 @@ function HoldingCard({ holding }: { holding: RankedHolding }) {
           </div>
         </dl>
       </CardContent>
-      <CardFooter className="text-xs text-muted-foreground">
+      <CardFooter className="px-0 text-xs text-muted-foreground">
         {rated
           ? `Inputs as of the ${PRICE_AS_OF_LABEL} close. Targets retrieved ${RETRIEVED_LABEL}.`
           : "No public price or consensus target is on file, so this name has no ROI score."}
@@ -150,8 +185,8 @@ export function EmptyBook() {
   return (
     <section className="flex flex-col gap-6" aria-labelledby="ranked-heading">
       <div>
-        <h2 id="ranked-heading" className="font-heading text-2xl tracking-tight">
-          Ranked holdings
+        <h2 id="ranked-heading" className="font-heading text-3xl tracking-tight">
+          In the book
         </h2>
       </div>
       <BookStatus filled={0} cap={BOOK_CAP} asOfLabel={PRICE_AS_OF_LABEL} />
@@ -200,12 +235,13 @@ function RankingList({ book }: { book: RankedBook }) {
   return (
     <section className="flex flex-col gap-6" aria-labelledby="ranked-heading">
       <div>
-        <h2 id="ranked-heading" className="font-heading text-2xl tracking-tight">
-          Ranked holdings
+        <h2 id="ranked-heading" className="font-heading text-3xl tracking-tight">
+          In the book
         </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Sorted by estimated upside. The recommendation label is shown for
-          context and does not set the order.
+        <p className="mt-2 font-heading text-base leading-relaxed text-pretty text-muted-foreground">
+          Five seats are filled, and the cap is ten. Sorted by estimated
+          upside. The recommendation is printed for context and does not set
+          the order.
         </p>
       </div>
       <BookStatus
@@ -236,17 +272,18 @@ function CandidateList({ candidates }: { candidates: RankedHolding[] }) {
       <div>
         <h2
           id="candidates-heading"
-          className="font-heading text-2xl tracking-tight"
+          className="font-heading text-3xl tracking-tight"
         >
-          Replacement candidates
+          Under consideration
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground">
+        <p className="mt-2 font-heading text-base leading-relaxed text-pretty text-muted-foreground">
           Not held. Jared named Palo Alto Networks and Google. Broadcom, Meta,
           and Eli Lilly are suggested so a swap has a chip alternative, a
           mega-cap platform that is not already owned, and one company outside
           technology. Adding all five without a sale would fill the ten-seat
-          book, so they are listed as replacements. Same upside math, ranked
-          among themselves.
+          book, so they stay off the book. Same upside math, ranked among
+          themselves. Broadcom’s longer note is about the company, not the
+          tape.
         </p>
       </div>
       <ol className="flex list-none flex-col gap-4">
@@ -276,23 +313,27 @@ export function MethodNotes() {
     <section className="flex flex-col gap-6" aria-labelledby="method-heading">
       <Separator />
       <div>
-        <h2 id="method-heading" className="font-heading text-2xl tracking-tight">
-          How this rank is calculated
+        <h2 id="method-heading" className="font-heading text-3xl tracking-tight">
+          How the figure is made
         </h2>
-        <p className="mt-3 text-sm leading-relaxed text-pretty">{METHOD_SUMMARY}</p>
-        <p className="mt-3 text-sm leading-relaxed text-pretty">
+        <p className="mt-3 font-heading text-base leading-relaxed text-pretty">
+          {METHOD_SUMMARY}
+        </p>
+        <p className="mt-3 font-heading text-base leading-relaxed text-pretty">
           SpaceX was checked against its June 2026 Nasdaq listing. It trades as
           SPCX, so it is rated with the same figure as Apple, Amazon, NVIDIA,
           and Microsoft.
         </p>
-        <p className="mt-3 text-sm leading-relaxed text-pretty">
-          The candidates use that same figure and are not holdings. Google is
-          scored as Alphabet Class A, ticker GOOGL. Class C, ticker GOOG, was
-          checked and is not the share used here. Broadcom, Meta, and Eli Lilly
-          were suggested for the seat they could fill. That suggestion is why
-          they are on the list. Their order is still the upside figure.
+        <p className="mt-3 font-heading text-base leading-relaxed text-pretty">
+          The names under consideration use that same figure and are not
+          holdings. Google is scored as Alphabet Class A, ticker GOOGL. Class
+          C, ticker GOOG, was checked and is not the share used here. Broadcom,
+          Meta, and Eli Lilly were suggested for the seat they could fill. That
+          suggestion is why they are on the list. Their order is still the
+          upside figure. The Broadcom note beside that figure is a separate
+          write-up of the company’s reported results.
         </p>
-        <p className="mt-3 text-sm leading-relaxed text-pretty">
+        <p className="mt-3 font-heading text-base leading-relaxed text-pretty">
           Closes are the {PRICE_AS_OF_LABEL} regular session. Average targets
           were retrieved {RETRIEVED_LABEL}. These numbers are a dated snapshot,
           not a live quote, and they are not investment advice.

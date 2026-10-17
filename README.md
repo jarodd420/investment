@@ -1,12 +1,14 @@
 # Investments
 
-Jared Rodriguez’s book: a short list of holdings ranked by estimated forward ROI.
+The Rodriguez Letter, issue 1: Jared Rodriguez’s book, a short list of holdings ranked by estimated forward ROI, written as an investment letter.
 
 The app shows one screen. The book holds at most ten names. Right now it is Apple (AAPL), Amazon (AMZN), NVIDIA (NVDA), SpaceX (SPCX), and Microsoft (MSFT).
 
 Five names sit beside the book as replacement candidates, not as holdings. Jared named Palo Alto Networks (PANW) and Google, scored as Alphabet Class A (GOOGL). The other three are suggested for the seat they could fill: Broadcom (AVGO) if the open seat is NVIDIA, Meta (META) if the open seat is a mega-cap platform already held, and Eli Lilly (LLY) if the open seat should not be another technology name.
 
-Each public stock uses the same figure: consensus analyst upside, the percent gap between the average analyst price target and the last regular-session close. The screen shows the last price, the target, the implied upside, the as-of date, and a short explanation of that gap.
+Each public stock uses the same figure: consensus analyst upside, the percent gap between the average analyst price target and the last regular-session close. The letter shows the last price, the target, the implied upside, the as-of date, and a short explanation of that gap.
+
+Broadcom also carries a three-point note on the business, taken from the company’s September 2, 2026 earnings release for the quarter ended August 2, 2026. That note uses reported revenue, profit, and cash flow. It does not use the share price or a chart, and it does not change the rank.
 
 SpaceX is publicly traded. It listed on Nasdaq as SPCX, with trading beginning June 12, 2026, so it is scored the same way as the other names. A future holding that is not publicly traded stays on the list and is marked not rated. The app does not invent a ticker, a price, or an ROI score for a private company.
 
