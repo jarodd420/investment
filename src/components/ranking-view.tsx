@@ -3,6 +3,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
+  CONSERVATIVE_SUMMARY,
+  conservativeReading,
+} from "@/lib/conservative"
+import {
   BOOK_CAP,
   METHOD_SUMMARY,
   PRICE_AS_OF_LABEL,
@@ -98,6 +102,28 @@ function CompanyThesis({ holding }: { holding: RankedHolding }) {
   )
 }
 
+function ConservativeNote({ holding }: { holding: RankedHolding }) {
+  const reading = conservativeReading(holding)
+  return (
+    <aside
+      className="border-t border-foreground/15 pt-4"
+      aria-label={`Conservative book on ${holding.name}`}
+    >
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <p className="text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
+          Conservative book
+        </p>
+        <p className="text-[11px] tracking-[0.16em] text-primary uppercase">
+          {reading.stance}
+        </p>
+      </div>
+      <p className="mt-2 font-heading text-base leading-relaxed text-pretty">
+        {reading.body}
+      </p>
+    </aside>
+  )
+}
+
 function HoldingCard({ holding }: { holding: RankedHolding }) {
   const rated = holding.impliedUpside != null && holding.rank != null
   return (
@@ -171,6 +197,7 @@ function HoldingCard({ holding }: { holding: RankedHolding }) {
             </dd>
           </div>
         </dl>
+        <ConservativeNote holding={holding} />
       </CardContent>
       <CardFooter className="px-0 text-xs text-muted-foreground">
         {rated
@@ -332,6 +359,9 @@ export function MethodNotes() {
           suggestion is why they are on the list. Their order is still the
           upside figure. The Broadcom note beside that figure is a separate
           write-up of the company’s reported results.
+        </p>
+        <p className="mt-3 font-heading text-base leading-relaxed text-pretty">
+          {CONSERVATIVE_SUMMARY}
         </p>
         <p className="mt-3 font-heading text-base leading-relaxed text-pretty">
           Closes are the {PRICE_AS_OF_LABEL} regular session. Average targets

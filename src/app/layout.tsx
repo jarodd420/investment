@@ -21,7 +21,7 @@ const newsreader = Newsreader({
 export const metadata: Metadata = {
   title: "The Rodriguez Letter",
   description:
-    "Issue 1 of Jared Rodriguez’s investment letter. The book ranked by consensus analyst upside, plus a three-point note on Broadcom’s business. An estimate, not investment advice.",
+    "Issue 1 of Jared Rodriguez’s investment letter. The book ranked by consensus analyst upside, with a conservative weight under each name. An estimate, not investment advice.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

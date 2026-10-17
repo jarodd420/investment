@@ -23,8 +23,9 @@ export function BookFrame({ children }: { children: ReactNode }) {
           They are ordered by one figure, the gap between the average analyst
           target and the last close. Five other companies are written up as
           replacements, not as positions. Broadcom gets a longer note, three
-          points on the business itself. This is an estimate, not advice, and
-          it is not a read of the chart.
+          points on the business itself. Under each name, a conservative book
+          comments on that same gap and names the weight the seat can bear.
+          This is an estimate, not advice, and it is not a read of the chart.
         </p>
       </header>
       <div className="mt-10 flex flex-1 flex-col gap-12">{children}</div>
